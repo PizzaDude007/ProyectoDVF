@@ -14,14 +14,6 @@ server = app.server
 Datos = pd.read_csv('/home/PizzaDude/mysite/data/steam.csv')
 JoinData = pd.read_csv('/home/PizzaDude/mysite/data/steam_genre.csv')
 
-fig = px.bar(JoinData, x="Genre", y="Metacritic", barmode="group")
-
-fig2 = px.bar(JoinData, x="Genre", y="RecommendationCount", barmode="group")
-#fig2.show()
-
-fig3 = px.bar(JoinData, x="Genre", y="PriceInitial", barmode="group")
-#fig3.show()
-
 app.layout = html.Div(children=[
     html.Div([
         html.H1(children='Steam Database'),
@@ -29,23 +21,25 @@ app.layout = html.Div(children=[
         html.Div(children='''
             Recolección de datos acerda de juegos en la plataforma Steam.
         '''),
-    
-        dcc.Graph(
-            id='example-graph',
-            figure=fig),
-       
-    
-    ]), 
-    html.Div([
-         dcc.Graph(
-            id='graph2',
-            figure=fig2),
-            
-    ]), 
-    html.Div([
-         dcc.Graph(
-            id='graph3',
-            figure=fig3),
-    
+
+        dcc.Graph(id='genre_graph'),
+
+        dcc.Dropdown(['Metacritic',
+                    'RecommendationCount',
+                    'PriceInitial'],
+                    id='yaxis-column'
+        ),
     ])
-],style={'background-color': '#242a44'})
+])#,style={'background-color': '#242a44'})
+
+@app.callback(
+    Output('genre_graph', 'figure'),
+    Input('yaxis-column', 'value')
+    )
+def update_graph(yaxis_column_name):
+    fig = px.bar(JoinData, x="Genre",
+                y=yaxis_column_name)
+    return fig
+
+
+
